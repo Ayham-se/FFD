@@ -1,0 +1,74 @@
+import cv2
+import torch
+import twilio
+import os
+from twilio.rest import Client
+
+#set up twilio
+camera_location =("yellow stone park")
+account_sid = "you twilio sid"
+auth_token = 'twilio auth token'
+twilio_number = 'twilio phone number'
+destination_number = 'your phone number'
+client = Client(account_sid, auth_token)
+
+#load the model
+model = torch.hub.load('ultralytics/yolov5', 'custom', path='file/path/best.pt', device='cpu', force_reload=False)  # local model
+
+#interface settings
+model.conf = 0.25  # NMS confidence threshold
+iou = 0.45  # NMS IoU threshold
+agnostic = False  # NMS class-agnostic
+multi_label = False  # NMS multiple labels per box
+classes = None  # (optional list) filter by class, i.e. = [0, 15, 16] for COCO persons, cats and dogs
+max_det = 1000  # maximum number of detections per image
+amp = False  # Automatic Mixed Precision (AMP) inference
+
+
+cap = cv2.VideoCapture("C:\\Users\\Ahmad\\Desktop\\test_vid.mp4")
+
+sms_sent = False
+
+# Loop through frames from the camera
+while True:
+    # Read a frame from the camera
+    ret, frame = cap.read()
+
+    # Detect objects in the frame using the YOLOv5 model
+    results = model(frame)
+
+    # Check if the model detected a fire
+    if (0) in results.names and not sms_sent:
+          message = client.messages.create(
+          body="fire detected in "+ (camera_location)+ ("!"),
+           from_=(twilio_number),
+          to=(destination_number))
+          print(message.sid)
+          
+          sms_sent = True
+           
+          results.print()  # or .show(), .save(), .crop(), .pandas(), etc.
+
+
+          results.xyxy[0]  # im1 predictions (tensor)
+          results.pandas().xyxy[0]  # im1 predictions (pandas)
+          print (results.pandas().xyxy[0])
+        
+
+    # Show the frame on the screen
+    cv2.imshow('frame', frame)
+
+    # Exit if the 'q' key is pressed
+    if cv2.waitKey(1) == ord('q'):
+        break
+
+
+
+if (0) in results.names:
+    message = client.messages.create(
+  body="fire detected in "+ (camera_location)+ ("!"),
+  from_=(twilio_number),
+  to=(destination_number)
+)
+
+print(message.sid)
