@@ -1,0 +1,53 @@
+import cv2
+import torch
+import twilio
+from twilio.rest import Client
+
+#set up twilio
+camera_location =("yellow stone national park")
+account_sid = "your twilio sid"
+auth_token = 'auth token'
+twilio_number = 'twilio phone muber'
+destination_number = 'your phone number'
+client = Client(account_sid, auth_token)
+
+
+#load the model
+model = torch.hub.load('ultralytics/yolov5', 'custom', path='file/path/best.pt', device='cpu', force_reload=False)  # local model
+
+
+img = 'C:\\Users\\Ahmad\\Desktop\\test_img.png'  # or file, Path, PIL, OpenCV, numpy, list
+
+
+results = model(img, size=640)  # custom inference size
+#results.save()
+#interface settings
+
+
+model.conf = 0.25  # NMS confidence threshold
+iou = 0.45  # NMS IoU threshold
+agnostic = False  # NMS class-agnostic
+multi_label = False  # NMS multiple labels per box
+classes = None  # (optional list) filter by class, i.e. = [0, 15, 16] for COCO persons, cats and dogs
+max_det = 1000  # maximum number of detections per image
+amp = False  # Automatic Mixed Precision (AMP) inference
+
+
+results.print()  # or .show(), .save(), .crop(), .pandas(), etc.
+
+
+results.xyxy[0]  # im1 predictions (tensor)
+results.pandas().xyxy[0]  # im1 predictions (pandas)
+
+print (results.pandas().xyxy[0])
+
+
+if (0) in results.names:
+    message = client.messages.create(
+  body="f"+ (camera_location)+ ("!"),
+  from_=(twilio_number),
+  to=(destination_number)
+  )
+
+
+print(message.sid)
