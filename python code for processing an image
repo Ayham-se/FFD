@@ -42,12 +42,16 @@ results.pandas().xyxy[0]  # im1 predictions (pandas)
 print (results.pandas().xyxy[0])
 
 
-if (0) in results.names:
-    message = client.messages.create(
-  body="fire detected in"+ (camera_location)+ ("!"),
-  from_=(twilio_number),
-  to=(destination_number)
-  )
+if len(results.xyxy[0]) == 0:
+    print("No fire detected.")
+else:
+    if (0) in results.names:
+        message = client.messages.create(
+            body="fire detected in "+ (camera_location)+ ("!"),
+            from_=(twilio_number),
+            to=(destination_number)
+        )
+        results.print()
 
 
 print(message.sid)
