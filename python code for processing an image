@@ -50,7 +50,7 @@ while True:
 #        )
 #        print(message.sid)
         results.print()
-        print ("ur dumb, still")
+        print ("fire detected!")
         sms_sent = True
            
         results.print()  # or .show(), .save(), .crop(), .pandas(), etc.
