@@ -6,10 +6,10 @@ from twilio.rest import Client
 
 #set up twilio
 camera_location =("yellow stone park")
-account_sid = "AC88ba71ad76dddd4d5ffaf9eaccfb6576"
-auth_token = 'ba9bc8d7c59d959c0f068c54427e272c'
-twilio_number = '+12766226164'
-destination_number = '+970598075075'
+account_sid = "twilio_account_sid"
+auth_token = 'twilio_auth_token'
+twilio_number = 'twilio_phone_number'
+destination_number = 'your_phone_number'
 client = Client(account_sid, auth_token)
 
 #load the model
@@ -25,12 +25,11 @@ max_det = 1000  # maximum number of detections per image
 amp = False  # Automatic Mixed Precision (AMP) inference
 
 
-#cap = cv2.VideoCapture("C:\\Users\\Ahmad\\Desktop\\test_vid2.mp4")
 cap = cv2.VideoCapture(0)
 
 sms_sent = False
 
-# Loop through frames from the camera
+
 while True:
     # Read a frame from the camera
     ret, frame = cap.read()
