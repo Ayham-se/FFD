@@ -38,21 +38,25 @@ while True:
     results = model(frame)
 
     # Check if the model detected a fire
-    if (0) in results.names and not sms_sent:
-          message = client.messages.create(
-          body="fire detected in "+ (camera_location)+ ("!"),
-           from_=(twilio_number),
-          to=(destination_number))
-          print(message.sid)
+    if len(results.xyxy[0]) == 0:
+     print("No fire detected.")
+    else:
+       if (0) in results.names:
+        message = client.messages.create(
+            body="fire detected in "+ (camera_location)+ ("!"),
+            from_=(twilio_number),
+            to=(destination_number)
+        )
+        results.print()
           
-          sms_sent = True
+        sms_sent = True
            
-          results.print()  # or .show(), .save(), .crop(), .pandas(), etc.
+        results.print()  # or .show(), .save(), .crop(), .pandas(), etc.
 
 
-          results.xyxy[0]  # im1 predictions (tensor)
-          results.pandas().xyxy[0]  # im1 predictions (pandas)
-          print (results.pandas().xyxy[0])
+        results.xyxy[0]  # im1 predictions (tensor)
+        results.pandas().xyxy[0]  # im1 predictions (pandas)
+        print (results.pandas().xyxy[0])
         
 
     # Show the frame on the screen
@@ -63,12 +67,5 @@ while True:
         break
 
 
-
-if (0) in results.names:
-    message = client.messages.create(
-  body="fire detected in "+ (camera_location)+ ("!"),
-  from_=(twilio_number),
-  to=(destination_number)
-)
 
 print(message.sid)
