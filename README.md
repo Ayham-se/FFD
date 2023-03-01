@@ -8,8 +8,6 @@ pip install twilio
 
 pip install opencv-python
 
-pip install numpy
-
 
 make sure to:
 change auth token / account sid / twilio phone number to the correct values, they can be obtained after creating a twilio account
