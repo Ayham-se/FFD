@@ -1,29 +1,21 @@
 import cv2
 import torch
 import twilio
+import os
 from twilio.rest import Client
 
 #set up twilio
-camera_location =("yellow stone national park")
-account_sid = "your twilio sid"
-auth_token = 'auth token'
-twilio_number = 'twilio phone muber'
+camera_location =("yellow stone park")
+account_sid = "you twilio sid"
+auth_token = 'twilio auth token'
+twilio_number = 'twilio phone number'
 destination_number = 'your phone number'
 client = Client(account_sid, auth_token)
 
-
 #load the model
-model = torch.hub.load('ultralytics/yolov5', 'custom', path='file/path/best.pt', device='cpu', force_reload=False)  # local model
+model = torch.hub.load('ultralytics/yolov5', 'custom', path='C:/Users/Ahmad/Desktop/best.pt', device='cpu', force_reload=False)  # local model
 
-
-img = 'file/path/test_img.png'  # or file, Path, PIL, OpenCV, numpy, list
-
-
-results = model(img, size=640)  # custom inference size
-#results.save()
 #interface settings
-
-
 model.conf = 0.25  # NMS confidence threshold
 iou = 0.45  # NMS IoU threshold
 agnostic = False  # NMS class-agnostic
@@ -33,25 +25,47 @@ max_det = 1000  # maximum number of detections per image
 amp = False  # Automatic Mixed Precision (AMP) inference
 
 
-results.print()  # or .show(), .save(), .crop(), .pandas(), etc.
+cap = cv2.VideoCapture("C:\\Users\\Ahmad\\Desktop\\test_vid2.mp4")
 
+sms_sent = False
 
-results.xyxy[0]  # im1 predictions (tensor)
-results.pandas().xyxy[0]  # im1 predictions (pandas)
+# Loop through frames from the camera
+while True:
+    # Read a frame from the camera
+    ret, frame = cap.read()
 
-print (results.pandas().xyxy[0])
+    # Detect objects in the frame using the YOLOv5 model
+    results = model(frame)
 
-
-if len(results.xyxy[0]) == 0:
-    print("No fire detected.")
-else:
-    if (0) in results.names:
-        message = client.messages.create(
-            body="fire detected in "+ (camera_location)+ ("!"),
-            from_=(twilio_number),
-            to=(destination_number)
-        )
+    # Check if the model detected a fire
+    if len(results.xyxy[0]) == 0:
+     print("No fire detected.")
+    else:
+       if (0) in results.names and not sms_sent:
+#        message = client.messages.create(
+#            body="fire detected in "+ (camera_location)+ ("!"),
+#            from_=(twilio_number),
+#            to=(destination_number)
+            
+#        )
+#        print(message.sid)
         results.print()
+        print ("ur dumb, still")
+        sms_sent = True
+           
+        results.print()  # or .show(), .save(), .crop(), .pandas(), etc.
 
 
-print(message.sid)
+        results.xyxy[0]  # im1 predictions (tensor)
+        results.pandas().xyxy[0]  # im1 predictions (pandas)
+        print (results.pandas().xyxy[0])
+        
+        while sms_sent:
+         user_input = input("Enter 'restart' to stop the loop: ")
+         if user_input.lower() == "restart":
+             sms_sent = False
+            
+    cv2.imshow('frame', frame)
+
+    if cv2.waitKey(1) == ord('q'):
+        break
